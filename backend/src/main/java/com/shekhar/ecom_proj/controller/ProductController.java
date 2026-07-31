@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,8 +30,8 @@ public class ProductController {
     public ResponseEntity<List<Product>> getAllProducts(){
         return new ResponseEntity<>(service.getAllProducts(), HttpStatus.OK);
     }
-
-    @GetMapping("/products/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/product/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable int id) {
         Product product = service.getProductById(id);
         if(product != null){
@@ -39,6 +40,7 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/product")
     public ResponseEntity<?> addProduct(@RequestPart Product product,
                                         @RequestPart MultipartFile imageFile){
@@ -82,6 +84,7 @@ public class ProductController {
 //            return new ResponseEntity<>("Failed to update", HttpStatus.BAD_REQUEST);
 //        }
 //    }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/product/{id}")
     public ResponseEntity<String> updateProduct(@PathVariable int id,
                                                 @RequestPart Product product,
@@ -96,6 +99,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/product/{productId}")
     public ResponseEntity<String > deleteProduct(@PathVariable int productId){
         Product product = service.getProductById(productId);

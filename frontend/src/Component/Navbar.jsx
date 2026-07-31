@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from 'react';
 import {
   FaShoppingBag,
   FaSearch,
@@ -7,63 +7,43 @@ import {
   FaUser,
   FaBars,
   FaTimes,
-} from "react-icons/fa";
-import { NavLink, Outlet } from "react-router";
-import SearchReasult from "./SearchReasult";
+} from 'react-icons/fa';
+import { NavLink, Outlet } from 'react-router';
+import { searchProducts } from '../api/productsApi';
+import SearchReasult from '../pages/SearchReasult';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const [searchText , setSearchText] = useState("");
-  const [searchError , setSearchError] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [searchError, setSearchError] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
   const [displaySearch, setDisplaySearch] = useState(false);
-
-  // const navLinks = [
-  //   'Home',
-  //   'Shop',
-  //   'Categories',
-  //   'Deals',
-  //   'New Arrivals',
-  //   'Contact',
-  // ];
 
   const handleChange = async (value) => {
     setSearchText(value);
     setSearchResult([]);
     setSearchError(null);
-    if(value.length >= 3){
+
+    if (value.length >= 3) {
       setDisplaySearch(true);
-      try{
-
-        const res = await fetch(`http://localhost:8080/api/product/search?keyword=${value}`);
-        if(!res.ok) throw new Error("Product Not Found");
-
-        const data = await res.json();
-        setSearchResult(data);
-        setSearchError(data.length === 0);
-        console.log(data);        
-
-      }catch(e){
-        setSearchError(e);
+      try {
+        const data = await searchProducts(value);
+        setSearchResult(Array.isArray(data) ? data : []);
+        setSearchError(Array.isArray(data) && data.length === 0);
+      } catch (e) {
+        setSearchError(e.message || 'Product not found');
         setSearchResult([]);
       }
-    }else{
+    } else {
       setDisplaySearch(false);
     }
-  }
-  useEffect(()=> {
-   console.log(searchError);
-   console.log(searchResult);
-   
-   
-  }, [searchResult, searchError]);
-
+  };
 
   const navLinks = [
-    { link: "/", name: "Home" },
-    { link: "/", name: "Shop" },
-    { link: "/addproduct", name: "Add Product" },
+    { link: '/', name: 'Home' },
+    { link: '/', name: 'Shop' },
+    { link: '/addproduct', name: 'Add Product' },
+    { link: '/logout', name: 'LogOut' },
   ];
   return (
     <>
@@ -73,11 +53,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-r from-blue-600 to-violet-600 flex items-center justify-center shadow-lg">
                 <FaShoppingBag className="text-white text-xl" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
                   TechStore
                 </h1>
                 <p className="text-xs text-slate-500 -mt-1">

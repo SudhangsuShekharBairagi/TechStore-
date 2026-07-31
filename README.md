@@ -2,7 +2,7 @@
 
 A full-stack e-commerce web application developed using **React** and **Spring Boot** as a backend learning project. This application allows users to manage products through CRUD operations and demonstrates REST API integration between the frontend and backend.
 
-> ⚠️ This project was developed for learning purposes. Some advanced e-commerce features such as authentication, authorization, shopping cart, and order management are not yet implemented.
+> ⚠️ This project was developed for learning purposes. Some advanced e-commerce features such as shopping cart, and order management are not yet implemented.
 
 ---
 
@@ -114,9 +114,6 @@ http://localhost:3000
 
 ## ⚠️ Current Limitations
 
-- No User Authentication
-- No User Registration
-- No Role-Based Authorization
 - No Shopping Cart
 - No Wishlist
 - No Checkout Process
@@ -129,8 +126,6 @@ http://localhost:3000
 
 ## 🔮 Future Improvements
 
-- JWT Authentication
-- User Registration & Login
 - Admin Dashboard
 - Shopping Cart
 - Wishlist

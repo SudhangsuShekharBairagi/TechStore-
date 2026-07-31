@@ -1,117 +1,101 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
- const AllDataContext = createContext();
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { getProductById, getProductImageUrl, getProducts } from '../api/productsApi';
 
-export const GetDataProvider = ({children}) => {
-    const [data, setData] = useState([]);   
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+const AllDataContext = createContext();
 
+export const GetDataProvider = ({ children }) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-        const fetchAllProduct = async () => {
-        setLoading(true);
-        setError(null);
+  const fetchAllProduct = useCallback(async () => {
+    setLoading(true);
+    setError('');
 
-        try {
-            const res = await fetch("http://localhost:8080/api/products");
-            if(!res.ok) throw new Error("Something Went Wrong");
-            const data = await res.json();
-            if (!data || data.length === 0) {
-                setError("Not Found");
-            } else {
-                setData(data);
-            }
-        } catch (error) {
-            // setLoading(false);
-            setError(error);
-            setData([]);            
-        }finally{
-            setLoading(false);
-        }
+    try {
+      const products = await getProducts();
+      setData(Array.isArray(products) ? products : []);
+      if (!products || products.length === 0) {
+        setError('No products found');
+      }
+    } catch (err) {
+      setError(err.message || 'Something went wrong');
+      setData([]);
+    } finally {
+      setLoading(false);
     }
-useEffect(() => {
-    fetchAllProduct();
-},[]);
-   
+  }, []);
 
-  return (
-    <AllDataContext.Provider value={{data,fetchAllProduct, loading, error}}>
-{children}
-    </AllDataContext.Provider>
-  )
-}
+  useEffect(() => {
+    fetchAllProduct();
+  }, [fetchAllProduct]);
+
+  const value = useMemo(() => ({ data, fetchAllProduct, loading, error }), [data, fetchAllProduct, loading, error]);
+
+  return <AllDataContext.Provider value={value}>{children}</AllDataContext.Provider>;
+};
 
 export const useAllProduct = () => useContext(AllDataContext);
 
-
 const getByIdContext = createContext();
-export const GetProductByIdProvider = ({children}) =>{
-    const [data, setData] = useState([]);   
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
 
+export const GetProductByIdProvider = ({ children }) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-        const fetchById = async (id) => {
-        setLoading(true);
-        setError(null);
-        setData([]);
+  const fetchById = useCallback(async (id) => {
+    if (!id) return;
 
-        try {
-            const res = await fetch(`http://localhost:8080/api/products/${id}` );
-            if(!res.ok) throw new Error("Something Went Wrong");
-            const data = await res.json();
-            if (!data || data.length === 0) {
-                setError("Not Found");
-            } else {
-                setData(data);
-            }
-        } catch (error) {
-            // setLoading(false);
-            setError(error);
-            setData([]);            
-        }finally{
-            setLoading(false);
-        }
+    setLoading(true);
+    setError('');
+    setData(null);
+
+    try {
+      const product = await getProductById(id);
+      setData(product);
+    } catch (err) {
+      setError(err.message || 'Product not found');
+      setData(null);
+    } finally {
+      setLoading(false);
     }
-   
+  }, []);
 
-  return (
-    <getByIdContext.Provider value={{data,fetchById, loading, error}}>
-{children}
-    </getByIdContext.Provider>
-  )
-}
+  const value = useMemo(() => ({ data, fetchById, loading, error }), [data, fetchById, loading, error]);
+
+  return <getByIdContext.Provider value={value}>{children}</getByIdContext.Provider>;
+};
 
 export const useProductById = () => useContext(getByIdContext);
 
-
-
 const getImageByIdProvider = createContext();
 
-export const GetImageByIdContext = ({children}) => {
-    const [imageUrl, setImageUrl] = useState("");
- const fetchImage = async (id) => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/product/${id}/image`
-        );
+export const GetImageByIdContext = ({ children }) => {
+  const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch image");
-        }
+  const fetchImage = useCallback(async (id) => {
+    if (!id) return;
 
-        const blob = await response.blob();
-        const imageObjectURL = URL.createObjectURL(blob);
-        setImageUrl(imageObjectURL);
-      } catch (error) {
-        console.error("Error fetching image:", error);
-      }
-    };
+    setLoading(true);
+    setError('');
 
-    return (
-        <getImageByIdProvider.Provider value={{imageUrl, fetchImage}}>
-            {children}
-        </getImageByIdProvider.Provider>
-    )
-}
+    try {
+      const objectUrl = await getProductImageUrl(id);
+      setImageUrl(objectUrl);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch image');
+      setImageUrl('');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const value = useMemo(() => ({ imageUrl, fetchImage, loading, error }), [imageUrl, fetchImage, loading, error]);
+
+  return <getImageByIdProvider.Provider value={value}>{children}</getImageByIdProvider.Provider>;
+};
 
 export const useImage = () => useContext(getImageByIdProvider);

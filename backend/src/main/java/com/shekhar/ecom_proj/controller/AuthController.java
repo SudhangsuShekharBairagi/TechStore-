@@ -2,12 +2,14 @@ package com.shekhar.ecom_proj.controller;
 
 import com.shekhar.ecom_proj.dto.LoginRequest;
 import com.shekhar.ecom_proj.model.Users;
+import com.shekhar.ecom_proj.security.JwtService;
 import com.shekhar.ecom_proj.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager){
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService){
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -48,8 +52,14 @@ public class AuthController {
         );
 
         Authentication authentication = authenticationManager.authenticate(token);
+        System.out.println(authentication);
+        UserDetails userDetails =
+                (UserDetails) authentication.getPrincipal();
+        System.out.println(userDetails);
 
-        return ResponseEntity.ok("Login Success");
+        String jwtToken = jwtService.generateToken(userDetails);
+
+        return ResponseEntity.ok(jwtToken);
 
     }
 }
