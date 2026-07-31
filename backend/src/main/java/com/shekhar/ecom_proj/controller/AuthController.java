@@ -1,6 +1,7 @@
 package com.shekhar.ecom_proj.controller;
 
 import com.shekhar.ecom_proj.dto.LoginRequest;
+import com.shekhar.ecom_proj.dto.LoginResponse;
 import com.shekhar.ecom_proj.model.Users;
 import com.shekhar.ecom_proj.security.JwtService;
 import com.shekhar.ecom_proj.service.UserService;
@@ -59,7 +60,16 @@ public class AuthController {
 
         String jwtToken = jwtService.generateToken(userDetails);
 
-        return ResponseEntity.ok(jwtToken);
+         LoginResponse response =
+                new LoginResponse(
+                        jwtToken,
+                        userDetails.getAuthorities()
+                                .iterator()
+                                .next()
+                                .getAuthority(),
+                        userDetails.getUsername()
+                );
+        return ResponseEntity.ok(response);
 
     }
 }

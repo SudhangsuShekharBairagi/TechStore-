@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   FaShoppingBag,
   FaSearch,
@@ -7,14 +7,14 @@ import {
   FaUser,
   FaBars,
   FaTimes,
-} from 'react-icons/fa';
-import { NavLink, Outlet } from 'react-router';
-import { searchProducts } from '../api/productsApi';
-import SearchReasult from '../pages/SearchReasult';
+} from "react-icons/fa";
+import { NavLink, Outlet } from "react-router";
+import { searchProducts } from "../api/productsApi";
+import SearchReasult from "../pages/SearchReasult";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [searchError, setSearchError] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
   const [displaySearch, setDisplaySearch] = useState(false);
@@ -31,7 +31,7 @@ export default function Navbar() {
         setSearchResult(Array.isArray(data) ? data : []);
         setSearchError(Array.isArray(data) && data.length === 0);
       } catch (e) {
-        setSearchError(e.message || 'Product not found');
+        setSearchError(e.message || "Product not found");
         setSearchResult([]);
       }
     } else {
@@ -39,12 +39,28 @@ export default function Navbar() {
     }
   };
 
-  const navLinks = [
-    { link: '/', name: 'Home' },
-    { link: '/', name: 'Shop' },
-    { link: '/addproduct', name: 'Add Product' },
-    { link: '/logout', name: 'LogOut' },
+  const role = localStorage.getItem("role");
+
+  const commonLinks = [
+    { link: "/", name: "Home" },
+    { link: "/", name: "Shop" },
   ];
+
+  const guestLinks = [
+    { link: "/login", name: "Login" },
+    { link: "/register", name: "Register" },
+  ];
+
+  const userLinks = [
+    ...(role === "ROLE_ADMIN"
+      ? [{ link: "/addproduct", name: "Add Product" }]
+      : []),
+    { link: "/logout", name: "Logout" },
+  ];
+
+  const isLoggedIn = !!localStorage.getItem("token");
+
+  const navLinks = [...commonLinks, ...(isLoggedIn ? userLinks : guestLinks)];
   return (
     <>
       {" "}
@@ -85,12 +101,18 @@ export default function Navbar() {
               <div className="relative w-full">
                 <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
-                onChange={(e) => handleChange(e.target.value)}
+                  onChange={(e) => handleChange(e.target.value)}
                   type="text"
                   placeholder="Search products..."
                   className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                {displaySearch && <SearchReasult searchError={searchError} searchResult={searchResult} setDisplaySearch={setDisplaySearch} />}
+                {displaySearch && (
+                  <SearchReasult
+                    searchError={searchError}
+                    searchResult={searchResult}
+                    setDisplaySearch={setDisplaySearch}
+                  />
+                )}
               </div>
             </div>
 
@@ -133,12 +155,17 @@ export default function Navbar() {
             <div className="relative">
               <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
-              onChange={(e) => handleChange(e.target.value)}
+                onChange={(e) => handleChange(e.target.value)}
                 type="text"
                 placeholder="Search products..."
                 className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-               {displaySearch && <SearchReasult searchError={searchError} searchResult={searchResult} />}            
+              {displaySearch && (
+                <SearchReasult
+                  searchError={searchError}
+                  searchResult={searchResult}
+                />
+              )}
             </div>
           </div>
         </div>
