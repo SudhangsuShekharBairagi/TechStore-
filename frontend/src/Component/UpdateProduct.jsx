@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { updateProduct } from '../api/productsApi';
 import { useAllProduct, useImage, useProductById } from '../context/GetDataProvider';
-import FormUl from './FormUl';
+import FormUl from '../pages/FormUl';
 
 const UpdateProduct = () => {
   const initialProduct = {

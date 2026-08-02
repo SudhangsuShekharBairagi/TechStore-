@@ -84,5 +84,17 @@ export const deleteProduct = async (id) => {
 
   return response.text();
 };
+export const checkout = async (productId, quantity) => {
+  const response = await request(`/checkout/${productId}?quantity=${quantity}`, {
+    method: 'POST'
+   
+  });
 
+  return response.text();
+};
+
+export const getProfile = async () => {
+  const response = await request('/profile');
+  return response.json();
+};
 export { buildApiUrl };

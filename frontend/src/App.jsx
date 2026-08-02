@@ -10,6 +10,9 @@ import UpdateProduct from "./pages/UpdateProduct";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import Login from "./pages/Login";
 import Logout from "./auth/Logout";
+import AddCard from "./pages/AddCard";
+import Registration from "./pages/Registration";
+import Profile from "./pages/Profile";
 
 const App = () => {
   return (
@@ -35,11 +38,26 @@ const App = () => {
               <UpdateProduct />
             </ProtectedRoute>
           } />
+           <Route
+            path="/addcard"
+            element={
+              <ProtectedRoute>
+                <AddCard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
       </Route>
-      <Route path="/logout" element={
-        
-             <Logout ></Logout>} />
-      </Routes>
+
+
+        <Route path="/logout" element={<Logout />} />
+
+        <Route path="/register" element={<Registration />} />
+        </Routes>
     </BrowserRouter>
   );
 };

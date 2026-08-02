@@ -18,6 +18,14 @@ export default function Navbar() {
   const [searchError, setSearchError] = useState(null);
   const [searchResult, setSearchResult] = useState([]);
   const [displaySearch, setDisplaySearch] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+
+  const navigare = useNavigate();
+    useEffect(() => {
+    const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+    setQuantity(totalQuantity);
+  }, [cartItems]);
+
 
   const handleChange = async (value) => {
     setSearchText(value);
@@ -125,14 +133,14 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <button className="flex w-11 h-11 rounded-xl hover:bg-slate-100 items-center justify-center transition-colors relative">
+              <button  onClick={()=> {navigare("/addcard");}}  className="flex w-11 h-11 rounded-xl hover:bg-slate-100 items-center justify-center transition-colors relative">
                 <FaShoppingCart className="text-slate-700 text-lg" />
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
                   3
                 </span>
               </button>
 
-              <button className="hidden sm:flex w-11 h-11 rounded-xl hover:bg-slate-100 items-center justify-center transition-colors">
+              <button onClick={()=> {navigare("/profile");}} className="hidden sm:flex w-11 h-11 rounded-xl hover:bg-slate-100 items-center justify-center transition-colors">
                 <FaUser className="text-slate-700 text-lg" />
               </button>
 

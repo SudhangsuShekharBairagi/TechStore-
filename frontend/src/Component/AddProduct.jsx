@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createProduct } from '../api/productsApi';
-import FormUl from './FormUl';
+import FormUl from '../pages/FormUl';
 
 const AddProduct = () => {
   const initialProduct = {
